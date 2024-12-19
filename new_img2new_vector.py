@@ -7,9 +7,13 @@ import tensorflow as tf
 from sklearn.preprocessing import LabelEncoder
 import pickle
 from keras_facenet import FaceNet
+from mtcnn.mtcnn import MTCNN  # Import MTCNN
 
 # Load the FaceNet model
 embedder = FaceNet()
+
+# Initialize MTCNN for face detection
+detector = MTCNN()
 
 # Function to preprocess the image
 def preprocess_image(image_path):
@@ -21,13 +25,23 @@ def preprocess_image(image_path):
     # Convert the image to RGB
     img_rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
 
-    # Resize the image to a fixed size if needed (optional)
-    img_resized = cv.resize(img_rgb, (160, 160))
+    # Detect faces using MTCNN
+    detections = detector.detect_faces(img_rgb)
+    if len(detections) == 0:
+        raise ValueError(f"No face detected in {image_path}")
+
+    # Assume the first detected face is the desired one
+    x, y, width, height = detections[0]['box']
+    x, y = max(0, x), max(0, y)  # Ensure box is within image bounds
+    face = img_rgb[y:y + height, x:x + width]
+
+    # Resize the face to the required input size for FaceNet
+    face_resized = cv.resize(face, (160, 160))
 
     # Expand dimensions to match model input
-    img_preprocessed = np.expand_dims(img_resized, axis=0)
+    face_preprocessed = np.expand_dims(face_resized, axis=0)
 
-    return img_preprocessed
+    return face_preprocessed
 
 # Path to the dataset folder
 dataset_path = "/mnt/d/Code/Face-Recognition-CD/New_User"

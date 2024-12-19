@@ -2,7 +2,7 @@ from img2vector import preprocess_and_extract_features, find_closest_match
 
 # Path to the features dictionary file
 features_file_path = "/mnt/d/Code/Face-Recognition-CD/Model/new2_features_dict.pkl"
-image_path = "/mnt/d/Code/Face-Recognition-CD/Test/IMG_0055.JPG"
+image_path = "/mnt/d/Code/Face-Recognition-CD/Test/anhtuantest4.jpg"
 
 
 input_embedding = preprocess_and_extract_features(image_path)
